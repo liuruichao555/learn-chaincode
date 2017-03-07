@@ -19,8 +19,8 @@ package main
 import (
 	"errors"
 	"fmt"
-	"strings"
 	"strconv"
+	"strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -29,11 +29,9 @@ import (
 type myChaincode struct {
 }
 
-
 var itemSp = "\n"
 var listSp = "!@#$"
 var minSp = "^&*"
-
 
 // ============================================================================================================================
 // Main
@@ -52,50 +50,50 @@ func (t *myChaincode) Init(stub shim.ChaincodeStubInterface, function string, ar
 
 // Invoke is our entry point to invoke a chaincode function
 func (t *myChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-    switch function {
+	switch function {
 
-    case "register":
-    	return t.register(stub, args)
+	case "register":
+		return t.register(stub, args)
 
-    case "add":
-        return t.add(stub, args)
+	case "add":
+		return t.add(stub, args)
 
-    case "updateAccessInfo":
-        return t.updateAccessInfo(stub, args)
+	case "updateAccessInfo":
+		return t.updateAccessInfo(stub, args)
 
-    case "updatePermission":
-        return t.updatePermission(stub, args)
+	case "updatePermission":
+		return t.updatePermission(stub, args)
 
-    case "confirmSummary":
-        return t.confirmSummary(stub, args)
+	case "confirmSummary":
+		return t.confirmSummary(stub, args)
 
-    default:
-        return nil, errors.New("Unsupported operation")
-    }
+	default:
+		return nil, errors.New("Unsupported operation")
+	}
 }
 
 // Query is our entry point for queries
 func (t *myChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
-    switch function {
+	switch function {
 
-    case "havePermission":
-        return t.havePermission(stub, args)
+	case "havePermission":
+		return t.havePermission(stub, args)
 
-    case "getRecord":
-        return t.getRecord(stub, args)
+	case "getRecord":
+		return t.getRecord(stub, args)
 
-    case "getSummary":
-        return t.getSummary(stub, args)
+	case "getSummary":
+		return t.getSummary(stub, args)
 
-    default:
-        return nil, errors.New("Unsupported operation")
-    }
+	default:
+		return nil, errors.New("Unsupported operation")
+	}
 }
 
-func (t *myChaincode) register(stub shim.ChaincodeStubInterface, args []string) ([]byte, error){
+func (t *myChaincode) register(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-	if len(args) < 1{
+	if len(args) < 1 {
 		return nil, errors.New("register operation must include at last 1 argument : userid")
 	}
 
@@ -118,7 +116,7 @@ func (t *myChaincode) register(stub shim.ChaincodeStubInterface, args []string) 
 	return nil, nil
 }
 
-func (t *myChaincode) add(stub shim.ChaincodeStubInterface, args []string) ([]byte, error){
+func (t *myChaincode) add(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	//(recordId，ownerId，providerId，accessInfo，permission)
 
@@ -150,8 +148,8 @@ func (t *myChaincode) add(stub shim.ChaincodeStubInterface, args []string) ([]by
 	//write the record
 	newValue := ownerId + itemSp + providerId + itemSp + accessInfo + itemSp + permission
 	err = stub.PutState(recordId, []byte(newValue))
-	if err!= nil {
-		return nil, fmt.Errorf("add operation failed.  Error while writing record: " +  err.Error())
+	if err != nil {
+		return nil, fmt.Errorf("add operation failed.  Error while writing record: " + err.Error())
 	}
 
 	//update the summary of the owner
@@ -171,7 +169,7 @@ func (t *myChaincode) add(stub shim.ChaincodeStubInterface, args []string) ([]by
 		return nil, fmt.Errorf("add operation failed. strconv err")
 	}
 	count = strconv.Itoa(intCount + 1)
-	newValue =  "1" + itemSp + count + itemSp + recordList + listSp + newRecordR
+	newValue = "1" + itemSp + count + itemSp + recordList + listSp + newRecordR
 	err = stub.PutState(ownerId, []byte(newValue))
 	if err != nil {
 		return nil, fmt.Errorf("add operation failed. Error while update the Onwer's suammary: " + err.Error())
@@ -194,19 +192,19 @@ func (t *myChaincode) add(stub shim.ChaincodeStubInterface, args []string) ([]by
 	if err != nil {
 		return nil, fmt.Errorf("add operation failed. strconv err")
 	}
-	count= strconv.Itoa(intCount + 1)
+	count = strconv.Itoa(intCount + 1)
 	newValue = flag + itemSp + count + itemSp + recordList + listSp + newRecordR
 	err = stub.PutState(providerId, []byte(newValue))
 	if err != nil {
 		return nil, fmt.Errorf("add operation failed. Error while update the provider's suammary: " + err.Error())
 	}
 
-	return nil,nil
+	return nil, nil
 }
 
-func (t *myChaincode) updateAccessInfo(stub shim.ChaincodeStubInterface, args []string) ([]byte, error){
+func (t *myChaincode) updateAccessInfo(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-	if len(args) < 3{
+	if len(args) < 3 {
 		return nil, fmt.Errorf("create operation must include at last 3 arguments: （recordId，providerId, accessInfo）")
 	}
 	//get the args
@@ -227,7 +225,7 @@ func (t *myChaincode) updateAccessInfo(stub shim.ChaincodeStubInterface, args []
 	providerId := listValue[1]
 	permission := listValue[3]
 	//check the provider
-	if ( _providerId != providerId ){
+	if _providerId != providerId {
 		return nil, fmt.Errorf("don't have the right to update the accessinfo")
 	}
 	newValue := ownerId + itemSp + providerId + itemSp + accessInfo + itemSp + permission
@@ -239,9 +237,9 @@ func (t *myChaincode) updateAccessInfo(stub shim.ChaincodeStubInterface, args []
 	return nil, nil
 }
 
-func (t *myChaincode) updatePermission(stub shim.ChaincodeStubInterface, args []string) ([]byte, error){
+func (t *myChaincode) updatePermission(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-	if len(args) < 7{
+	if len(args) < 7 {
 		return nil, fmt.Errorf("updatePermission operation must include at last 7 arguments: (recordId，ownerId，[consumer, dataItem,  query, hash, deadline]）")
 	}
 	//get the args
@@ -252,7 +250,6 @@ func (t *myChaincode) updatePermission(stub shim.ChaincodeStubInterface, args []
 	query := args[4]
 	hash := args[5]
 	deadline := args[6]
-
 
 	//read the record
 	value, err := stub.GetState(recordId)
@@ -266,11 +263,10 @@ func (t *myChaincode) updatePermission(stub shim.ChaincodeStubInterface, args []
 	ownerId := listValue[0]
 	providerId := listValue[1]
 	accessInfo := listValue[2]
-	//check the right 
+	//check the right
 	if _ownerId != ownerId {
 		return nil, fmt.Errorf("don't have the right to do this")
 	}
-
 
 	permission := listValue[3]
 	//maybe lookup the list and find out the existent permission, then delete the old one
@@ -292,14 +288,14 @@ func (t *myChaincode) updatePermission(stub shim.ChaincodeStubInterface, args []
 	listValue = strings.Split(string(value), itemSp)
 	count := listValue[1]
 	recordList := listValue[2]
-	//maybe lookup the list and find out the existent recorid, then delete the old one 
+	//maybe lookup the list and find out the existent recorid, then delete the old one
 	newRecordR := recordId + minSp + "1"
-	intCount, err := strconv.Atoi(count) 
+	intCount, err := strconv.Atoi(count)
 	if err != nil {
 		return nil, fmt.Errorf("updatePermission operation failed. strconv err")
 	}
 	count = strconv.Itoa(intCount + 1)
-	
+
 	newvalue := "1" + itemSp + count + itemSp + recordList + listSp + newRecordR
 	err = stub.PutState(providerId, []byte(newvalue))
 	if err != nil {
@@ -308,8 +304,8 @@ func (t *myChaincode) updatePermission(stub shim.ChaincodeStubInterface, args []
 	return nil, nil
 }
 
-func (t *myChaincode) confirmSummary(stub shim.ChaincodeStubInterface, args []string) ([]byte, error){
-	if len(args) < 3{
+func (t *myChaincode) confirmSummary(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	if len(args) < 3 {
 		return nil, fmt.Errorf("confirmSummary operation must include at last 3 arguments: （ownerId，recordId，op）")
 	}
 
@@ -317,7 +313,7 @@ func (t *myChaincode) confirmSummary(stub shim.ChaincodeStubInterface, args []st
 	ownerId := args[0]
 	recordId := args[1]
 	op := args[2]
-	if op != "ac" && op != "re"{
+	if op != "ac" && op != "re" {
 		return nil, fmt.Errorf("bad format of the op")
 	}
 	//get the owner's summary
@@ -341,15 +337,15 @@ func (t *myChaincode) confirmSummary(stub shim.ChaincodeStubInterface, args []st
 	newRecordList := ""
 	existence := false
 	noNew := true
-	for _, record := range listRecord{
+	for _, record := range listRecord {
 		if record == "" {
 			continue
 		}
 		rcd := strings.Split(record, minSp)
-		//find the one 
-		if rcd[0] == recordId{
+		//find the one
+		if rcd[0] == recordId {
 			existence = true
-			if op == "ac"{
+			if op == "ac" {
 				newRecord := recordId + minSp + "0"
 				newRecordList = newRecordList + listSp + newRecord
 				//update the provider's summary?????
@@ -359,13 +355,13 @@ func (t *myChaincode) confirmSummary(stub shim.ChaincodeStubInterface, args []st
 				if err != nil {
 					return nil, fmt.Errorf("confirmSummary operation failed. strconv err")
 				}
-				count = strconv.Itoa( intCount - 1)
+				count = strconv.Itoa(intCount - 1)
 				//update the provider's summary???
-				
+
 			}
 		} else {
 			newRecordList = newRecordList + listSp + record
-			if rcd[1] == "1"{
+			if rcd[1] == "1" {
 				noNew = false
 			}
 		}
@@ -376,7 +372,7 @@ func (t *myChaincode) confirmSummary(stub shim.ChaincodeStubInterface, args []st
 	if noNew {
 		flag = "0"
 	}
-	//do the update 
+	//do the update
 	newValue := flag + itemSp + count + itemSp + newRecordList
 	err = stub.PutState(ownerId, []byte(newValue))
 	if err != nil {
@@ -385,18 +381,18 @@ func (t *myChaincode) confirmSummary(stub shim.ChaincodeStubInterface, args []st
 	return nil, nil
 }
 
-func (t *myChaincode) havePermission(stub shim.ChaincodeStubInterface, args []string) ([]byte, error){
-	if len(args) < 3{
-            return nil, errors.New("havePermission operation must include at last 2 arguments: (userId, recordID, query）")
-    }
-    //get the args
-    userId := args[0]
-    recordId := args[1]
-    query := args[2]
+func (t *myChaincode) havePermission(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	if len(args) < 3 {
+		return nil, errors.New("havePermission operation must include at last 2 arguments: (userId, recordID, query）")
+	}
+	//get the args
+	userId := args[0]
+	recordId := args[1]
+	query := args[2]
 
-    ret := "False"
+	ret := "False"
 
-    //read the record
+	//read the record
 	value, err := stub.GetState(recordId)
 	if err != nil {
 		return nil, fmt.Errorf("havePermission operation failed. Error while getting the record: " + err.Error())
@@ -416,7 +412,7 @@ func (t *myChaincode) havePermission(stub shim.ChaincodeStubInterface, args []st
 	listPermission := strings.Split(permission, listSp)
 	for _, p := range listPermission {
 		listP := strings.Split(p, minSp)
-		if listP[0] == userId && listP[2] == query{
+		if listP[0] == userId && listP[2] == query {
 			ret = "True"
 			break
 		}
@@ -424,16 +420,16 @@ func (t *myChaincode) havePermission(stub shim.ChaincodeStubInterface, args []st
 	return []byte(ret), nil
 }
 
-func (t *myChaincode) getRecord(stub shim.ChaincodeStubInterface, args []string) ([]byte, error){
-	if len(args) < 2{
-            return nil, errors.New("getRecord operation must include at last 2 arguments: (userId, recordID)")
-    }
-    //get the args
-    userId := args[0]
-    recordId := args[1]
-    //query := args[2]
+func (t *myChaincode) getRecord(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	if len(args) < 2 {
+		return nil, errors.New("getRecord operation must include at last 2 arguments: (userId, recordID)")
+	}
+	//get the args
+	userId := args[0]
+	recordId := args[1]
+	//query := args[2]
 
-    //read the record
+	//read the record
 	value, err := stub.GetState(recordId)
 	if err != nil {
 		return nil, fmt.Errorf("getRecord operation failed. Error while getting the record: " + err.Error())
@@ -467,30 +463,19 @@ func (t *myChaincode) getRecord(stub shim.ChaincodeStubInterface, args []string)
 	return []byte(ret), nil
 }
 
-func (t *myChaincode) getSummary(stub shim.ChaincodeStubInterface, args []string) ([]byte, error){
-	if len(args) < 1{
-            return nil, errors.New("getSummary operation must include at last 1 argument: (userId）")
-    }
-    userId := args[0]
+func (t *myChaincode) getSummary(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	if len(args) < 1 {
+		return nil, errors.New("getSummary operation must include at last 1 argument: (userId）")
+	}
+	userId := args[0]
 
-    //read the summary
-    value, err := stub.GetState(userId)
-    if err != nil {
-    	return nil, fmt.Errorf("getSummary operation failed. Error while getting the record: " + err.Error())
-    }
-    if value == nil {
-    	return nil, fmt.Errorf("don't have this user")
-    }
-    return value, nil
+	//read the summary
+	value, err := stub.GetState(userId)
+	if err != nil {
+		return nil, fmt.Errorf("getSummary operation failed. Error while getting the record: " + err.Error())
+	}
+	if value == nil {
+		return nil, fmt.Errorf("don't have this user")
+	}
+	return value, nil
 }
-
-
-
-
-
-
-
-
-
-
-
