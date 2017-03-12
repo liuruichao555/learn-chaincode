@@ -788,7 +788,7 @@ func (t *myChaincode)getbx(stub shim.ChaincodeStubInterface, args []string) ([]b
 	key := bxuuid
 	value, err := stub.GetState(key)
 	if err != nil{
-		return nil, fmt.Errorf("get operation failed. Error accessing state: %s", err)
+		return nil, fmt.Errorf("get operation failed. Error accessing state: %s.", err)
 	}
 	if value == nil {
 		return []byte("don't have this info"), nil
